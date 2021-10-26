@@ -22,8 +22,8 @@ namespace API_ToDo.Services
             var descriptor = new SecurityTokenDescriptor()
             {
                 Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.Now.AddHours(3),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha512Signature),
+                Expires = DateTime.UtcNow.AddMinutes(180),
             };
 
             var token = tokenHandler.CreateJwtSecurityToken(descriptor);
