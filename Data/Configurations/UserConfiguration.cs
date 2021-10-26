@@ -22,10 +22,9 @@ namespace API_ToDo.Data.Configurations
 
             builder
                 .HasIndex(u => u.Email);
-
-            //builder
-            //    .HasMany(u => u.Tasks)
-            //    .WithOne(t => t.User);
+            
+            builder
+                .HasIndex(u => u.UserName);
 
             builder
                 .Property<DateTime>("last_update")
