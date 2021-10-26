@@ -7,5 +7,6 @@ namespace API_ToDo.Domain.Dtos
         public string Title { get; set; }
         public string Observation { get; set; }
         public DateTime? Date { get; set; }
+        public bool Done { get; set; }
     }
 }

@@ -13,6 +13,9 @@ namespace API_ToDo.Domain.Dtos
         [Required(ErrorMessage = "Field User is required")]
         public string User { get; set; }
 
+        [Required(ErrorMessage = "Field Done is required")]
+        public bool Done { get; set; }
+
         [Required(ErrorMessage = "Field Date is required")]
         public DateTime Date { get; set; }
     }

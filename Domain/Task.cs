@@ -12,6 +12,7 @@ namespace API_ToDo.Domain
         [Required]
         [ForeignKey("user_id")]
         public User User { get; set; }
+        public bool Done { get; set; }
         public DateTime Date { get; set; }
     }
 }
