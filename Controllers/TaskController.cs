@@ -25,7 +25,7 @@ namespace API_ToDo.Controllers
             _context = context;
         }
 
-        [HttpGet("{username}")]
+        [HttpGet("user/{username}")]
         public async Task<IActionResult> GetByUser(string username)
         {
             try
@@ -44,14 +44,7 @@ namespace API_ToDo.Controllers
                         var tasksReturn = new List<TaskReturnDto>();
                         foreach (var item in tasks)
                         {
-                            tasksReturn.Add(new TaskReturnDto
-                            {
-                                Id = item.Id,
-                                Title = item.Title,
-                                Observation = item.Observation,
-                                User = item.User.UserName,
-                                Date = item.Date,
-                            });
+                            tasksReturn.Add(MapperToTaskReturn(item));
                         }
 
                         return Ok(tasksReturn);
@@ -69,6 +62,20 @@ namespace API_ToDo.Controllers
 
         }
 
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            var task = await GetTaskById(id);
+
+            if (task != null)
+            {
+                return base.Ok(MapperToTaskReturn(task));
+            }
+
+            return new NotFoundObjectResult("Wed did't find any task with this id:" + id + ", please try with a valid id.");
+        }
+
+
         [HttpPost]
         public async Task<IActionResult> Add([FromBody] TaskEntryDto dto)
         {
@@ -84,6 +91,7 @@ namespace API_ToDo.Controllers
                         Observation = dto.Observation,
                         Date = dto.Date,
                         User = user,
+                        Done = dto.Done,
 
                     };
 
@@ -92,16 +100,9 @@ namespace API_ToDo.Controllers
 
 
                     return CreatedAtAction(
-                        nameof(GetByUser),
-                        new { username = task.User.UserName },
-                        new TaskReturnDto
-                        {
-                            Id = task.Id,
-                            Title = task.Title,
-                            Observation = task.Observation,
-                            Date = task.Date,
-                            User = task.User.UserName
-                        });
+                        nameof(GetById),
+                        new { id = task.Id },
+                        MapperToTaskReturn(task));
                 }
 
                 return new NotFoundObjectResult("Wed did't find any user with this username:" + dto.User + ", please try again or register yourself.");
@@ -132,6 +133,10 @@ namespace API_ToDo.Controllers
                     if (dto.Date != null)
                     {
                         task.Date = dto.Date.Value;
+                    }
+                    if (dto.Done != null)
+                    {
+                        task.Done = dto.Done.Value;
                     }
 
                     await _context.SaveChangesAsync();
@@ -170,6 +175,7 @@ namespace API_ToDo.Controllers
             }
         }
 
+
         private async Task<Domain.Task> GetTaskById(int id)
         {
             return await _context.Tasks.FirstOrDefaultAsync(t => t.Id == id);
@@ -180,6 +186,19 @@ namespace API_ToDo.Controllers
             var user = await _context.users.FirstOrDefaultAsync(u => u.UserName == username.ToLower());
 
             return user;
+        }
+
+        private TaskReturnDto MapperToTaskReturn(Domain.Task task)
+        {
+            return new TaskReturnDto
+            {
+                Id = task.Id,
+                Title = task.Title,
+                Observation = task.Observation,
+                Done = task.Done,
+                Date = task.Date,
+                User = task.User.UserName,
+            };
         }
 
         private ObjectResult ReturnCase500 (string message)
