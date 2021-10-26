@@ -13,15 +13,6 @@ namespace API_ToDo.Data.Configurations
                 .HasKey(t => t.Id);
 
             builder
-                .Property(t => t.User)
-                .IsRequired();
-
-            builder
-                .HasOne(t => t.User)
-                .WithMany(u => u.Tasks)
-                .HasForeignKey(t => t.User);
-
-            builder
                 .Property(t => t.Title)
                 .IsRequired();
 

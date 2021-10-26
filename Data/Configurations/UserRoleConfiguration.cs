@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using API_ToDo.Domain;
+﻿using API_ToDo.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -13,7 +9,7 @@ namespace API_ToDo.Data.Configurations
         public void Configure(EntityTypeBuilder<UserRole> builder)
         {
             builder
-                .HasKey(ur => new { ur.User, ur.Role });
+                .HasKey(ur => new { ur.UserId, ur.RoleId });
 
             builder
                 .HasOne(ur => ur.User)

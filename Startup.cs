@@ -36,7 +36,7 @@ namespace API_ToDo
         {
             services.AddCors();
             services.AddControllers();
-            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            //services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddDbContext<ToDoContext>(opt => opt.UseSqlServer(Configuration.GetConnectionString("ConnectionSQLServer")));
 
             IdentityBuilder builder = services.AddIdentityCore<User>(opcoes =>
