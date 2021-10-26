@@ -41,7 +41,20 @@ namespace API_ToDo.Controllers
 
                     if (tasks.Count > 0)
                     {
-                        return Ok(tasks);
+                        var tasksReturn = new List<TaskReturnDto>();
+                        foreach (var item in tasks)
+                        {
+                            tasksReturn.Add(new TaskReturnDto
+                            {
+                                Id = item.Id,
+                                Title = item.Title,
+                                Observation = item.Observation,
+                                User = item.User.UserName,
+                                Date = item.Date,
+                            });
+                        }
+
+                        return Ok(tasksReturn);
                     }
 
                     return NoContent();
@@ -51,7 +64,7 @@ namespace API_ToDo.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"Banco de dados falhou{ex.Message}");
+                return ReturnCase500(ex.Message);
             }
 
         }
@@ -95,10 +108,72 @@ namespace API_ToDo.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"Banco de dados falhou{ex.Message}");
+                return ReturnCase500(ex.Message);
             }
         }
 
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update (int id, [FromBody] TaskEntryUpdateDto dto)
+        {
+            try
+            {
+                var task = await GetTaskById(id);
+
+                if (task != null)
+                {
+                    if (dto.Title != null)
+                    {
+                        task.Title = dto.Title;
+                    }
+                    if (dto.Observation != null)
+                    {
+                        task.Observation = dto.Observation;
+                    }
+                    if (dto.Date != null)
+                    {
+                        task.Date = dto.Date.Value;
+                    }
+
+                    await _context.SaveChangesAsync();
+
+                    return NoContent();
+                }
+
+                return new NotFoundObjectResult("Wed did't find any task with this id:" + id + ", please try with a valid id.");
+            }
+            catch (Exception ex)
+            {
+                return ReturnCase500(ex.Message);
+            }
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Remove (int id)
+        {
+            try
+            {
+                var task = await GetTaskById(id);
+
+                if (task != null)
+                {
+                    _context.Tasks.Remove(task);
+                    await _context.SaveChangesAsync();
+
+                    return NoContent();
+                }
+
+                return new NotFoundObjectResult("Wed did't find any task with this id:" + id + ", please try with a valid id.");
+            }
+            catch (Exception ex)
+            {
+                return ReturnCase500(ex.Message);
+            }
+        }
+
+        private async Task<Domain.Task> GetTaskById(int id)
+        {
+            return await _context.Tasks.FirstOrDefaultAsync(t => t.Id == id);
+        }
 
         private async Task<User> GetUserByUsername(string username)
         {
@@ -106,5 +181,11 @@ namespace API_ToDo.Controllers
 
             return user;
         }
+
+        private ObjectResult ReturnCase500 (string message)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, $"Banco de dados falhou{message}");
+        }
+
     }
 }
