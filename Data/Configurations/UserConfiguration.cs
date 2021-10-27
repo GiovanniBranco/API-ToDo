@@ -29,6 +29,24 @@ namespace API_ToDo.Data.Configurations
             builder
                 .Property<DateTime>("last_update")
                 .HasDefaultValueSql("getdate()");
+
+            builder
+                .Ignore(u => u.PhoneNumber);
+
+            builder
+                .Ignore(u => u.PhoneNumberConfirmed);
+
+            builder
+                .Ignore(u => u.EmailConfirmed);
+
+            builder
+                .Ignore(u => u.TwoFactorEnabled);
+
+            builder
+                .Ignore(u => u.LockoutEnd);
+
+            builder
+                .Ignore(u => u.AccessFailedCount);
         }
     }
 }
