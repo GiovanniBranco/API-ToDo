@@ -30,7 +30,15 @@ namespace API_ToDo.Controllers
         [HttpGet]
         public IActionResult GetAll()
         {
-            return Ok(_context.UsersDbSet);
+            var users = _context.UsersDbSet;
+            var usersReturn = new List<UserReturnDto>();
+
+            foreach (var user in users)
+            {
+                usersReturn.Add(MapperToReturn(user));
+            }
+
+            return Ok(usersReturn);
         }
 
         [AllowAnonymous]
@@ -43,12 +51,7 @@ namespace API_ToDo.Controllers
 
                 if (userDb != null)
                 {
-                    return CreatedAtAction(nameof(GetById), new { id = userDb.Id }, new UserReturnDto
-                    {
-                        Email = userDb.Email,
-                        Id = userDb.Id,
-                        Username = userDb.UserName
-                    });
+                    return CreatedAtAction(nameof(GetById), new { id = userDb.Id }, MapperToReturn(userDb));
                 }
 
                 return BadRequest();
@@ -70,7 +73,7 @@ namespace API_ToDo.Controllers
 
                 if (user != null)
                 {
-                    return Ok(user);
+                    return Ok(MapperToReturn(user));
                 }
 
                 return new NotFoundObjectResult("Wed did't find any user with this id:" + id + ", please try again or register yourself.");
@@ -108,7 +111,7 @@ namespace API_ToDo.Controllers
 
                         if (!result.Succeeded)
                         {
-                            return new BadRequestObjectResult($"Errors: {result.Errors.First().Description}");
+                            return new BadRequestObjectResult($"Error: {result.Errors.First().Description}");
                         }
                     }
 
@@ -137,15 +140,29 @@ namespace API_ToDo.Controllers
                 {
                     _context.UsersDbSet.Remove(user);
                     await _context.SaveChangesAsync();
+
+                    return NoContent();
                 }
 
-                return new NotFoundObjectResult("Wed did't find any user with this id:" + id + ", please try again or register yourself.");
+                return new NotFoundObjectResult("Wed did't find any user with this id:" + id + ", please try again.");
             }
             catch (Exception ex)
             {
                 return ReturnCase500(ex.Message);
             }
         }
+
+        private UserReturnDto MapperToReturn(User user)
+        {
+            return new UserReturnDto
+            {
+                Email = user.Email,
+                Id = user.Id,
+                Username = user.UserName,
+                Fullname = user.FullName,
+            };
+        }
+
 
         private ObjectResult ReturnCase500(string message)
         {
