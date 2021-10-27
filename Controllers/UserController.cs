@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using API_ToDo.Data;
@@ -60,7 +61,7 @@ namespace API_ToDo.Controllers
 
         }
 
-        [HttpGet("/{id}")]
+        [HttpGet("{id}")]
         public IActionResult GetById(int id)
         {
             try
@@ -89,22 +90,28 @@ namespace API_ToDo.Controllers
 
                 if (user != null)
                 {
-                    if (string.IsNullOrEmpty(dto.Email))
+                    if (!string.IsNullOrEmpty(dto.Email))
                     {
                         user.Email = dto.Email;
                     }
-                    if (string.IsNullOrEmpty(dto.Username))
+                    if (!string.IsNullOrEmpty(dto.Username))
                     {
                         user.UserName = dto.Username;
                     }
-                    if (string.IsNullOrEmpty(dto.NewPassword))
+                    if (!string.IsNullOrEmpty(dto.NewPassword))
                     {
                         if (string.IsNullOrEmpty(dto.CurrentPassword))
                         {
                             return new BadRequestObjectResult("To change password is necessary to inform the current password on field CurrentPassword");
                         }
-                        await _userManager.ChangePasswordAsync(user, dto.CurrentPassword, dto.NewPassword);
+                        var result = await _userManager.ChangePasswordAsync(user, dto.CurrentPassword, dto.NewPassword);
+
+                        if (!result.Succeeded)
+                        {
+                            return new BadRequestObjectResult($"Errors: {result.Errors.First().Description}");
+                        }
                     }
+
 
                     await _context.SaveChangesAsync();
 

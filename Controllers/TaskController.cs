@@ -120,11 +120,11 @@ namespace API_ToDo.Controllers
 
                 if (task != null)
                 {
-                    if (string.IsNullOrEmpty(dto.Title))
+                    if (!string.IsNullOrEmpty(dto.Title))
                     {
                         task.Title = dto.Title;
                     }
-                    if (string.IsNullOrEmpty(dto.Observation))
+                    if (!string.IsNullOrEmpty(dto.Observation))
                     {
                         task.Observation = dto.Observation;
                     }
