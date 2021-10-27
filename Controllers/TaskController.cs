@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Threading.Tasks;
 using API_ToDo.Data;
 using API_ToDo.Domain;
@@ -69,12 +68,11 @@ namespace API_ToDo.Controllers
 
             if (task != null)
             {
-                return base.Ok(MapperToTaskReturn(task));
+                return Ok(MapperToTaskReturn(task));
             }
 
             return new NotFoundObjectResult("Wed did't find any task with this id:" + id + ", please try with a valid id.");
         }
-
 
         [HttpPost]
         public async Task<IActionResult> Add([FromBody] TaskEntryDto dto)
@@ -114,7 +112,7 @@ namespace API_ToDo.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update (int id, [FromBody] TaskEntryUpdateDto dto)
+        public async Task<IActionResult> Update(int id, [FromBody] TaskEntryUpdateDto dto)
         {
             try
             {
@@ -122,11 +120,11 @@ namespace API_ToDo.Controllers
 
                 if (task != null)
                 {
-                    if (dto.Title != null)
+                    if (string.IsNullOrEmpty(dto.Title))
                     {
                         task.Title = dto.Title;
                     }
-                    if (dto.Observation != null)
+                    if (string.IsNullOrEmpty(dto.Observation))
                     {
                         task.Observation = dto.Observation;
                     }
@@ -153,7 +151,7 @@ namespace API_ToDo.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Remove (int id)
+        public async Task<IActionResult> Remove(int id)
         {
             try
             {
@@ -175,15 +173,16 @@ namespace API_ToDo.Controllers
             }
         }
 
-
         private async Task<Domain.Task> GetTaskById(int id)
         {
-            return await _context.Tasks.FirstOrDefaultAsync(t => t.Id == id);
+            return await _context.Tasks
+                .Include(t => t.User)
+                .FirstOrDefaultAsync(t => t.Id == id);
         }
 
         private async Task<User> GetUserByUsername(string username)
         {
-            var user = await _context.users.FirstOrDefaultAsync(u => u.UserName == username.ToLower());
+            var user = await _context.UsersDbSet.FirstOrDefaultAsync(u => u.UserName == username.ToLower());
 
             return user;
         }
@@ -201,7 +200,7 @@ namespace API_ToDo.Controllers
             };
         }
 
-        private ObjectResult ReturnCase500 (string message)
+        private ObjectResult ReturnCase500(string message)
         {
             return StatusCode(StatusCodes.Status500InternalServerError, $"Banco de dados falhou{message}");
         }

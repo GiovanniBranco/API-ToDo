@@ -31,7 +31,7 @@ namespace API_ToDo.Controllers
         {
             try
             {
-                var user = _context.users.FirstOrDefault(u => u.UserName == dto.Username);
+                var user = _context.UsersDbSet.FirstOrDefault(u => u.UserName == dto.Username);
 
                 if (user != null)
                 {

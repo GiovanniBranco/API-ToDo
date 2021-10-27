@@ -10,7 +10,7 @@ namespace API_ToDo.Data
                                                     IdentityUserClaim<long>, UserRole, IdentityUserLogin<long>,
                                                     IdentityRoleClaim<long>, IdentityUserToken<long>>
     {
-        public DbSet<User> users { get; set; }
+        public DbSet<User> UsersDbSet { get; set; }
         public DbSet<Task> Tasks { get; set; }
 
         public ToDoContext(DbContextOptions options) : base(options)
