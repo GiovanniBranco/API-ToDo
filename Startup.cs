@@ -89,6 +89,11 @@ namespace API_ToDo
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "API_ToDo v1"));
             }
 
+            app.UseCors(c => c
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowAnyOrigin());
+
             app.UseHttpsRedirection();
 
             app.UseRouting();
@@ -96,10 +101,13 @@ namespace API_ToDo
             app.UseAuthentication();
             app.UseAuthorization();
 
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
+
+
         }
     }
 }

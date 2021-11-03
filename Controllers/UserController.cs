@@ -163,7 +163,6 @@ namespace API_ToDo.Controllers
             };
         }
 
-
         private ObjectResult ReturnCase500(string message)
         {
             return StatusCode(StatusCodes.Status500InternalServerError, $"Banco de dados falhou {message}");
