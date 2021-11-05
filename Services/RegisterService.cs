@@ -13,7 +13,7 @@ namespace API_ToDo.Services
 
         public static async Task<User> Register(UserEntryDto userDto, UserManager<User> userManager)
         {
-            var user = new User { UserName = userDto.Username, Email = userDto.Email };
+            var user = new User { UserName = userDto.Username, Email = userDto.Email, FullName = userDto.FullName };
             var result = await userManager.CreateAsync(user, userDto.Password);
 
             if (result.Succeeded)

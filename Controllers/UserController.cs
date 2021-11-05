@@ -101,6 +101,10 @@ namespace API_ToDo.Controllers
                     {
                         user.UserName = dto.Username;
                     }
+                    if (!string.IsNullOrEmpty(dto.FullName))
+                    {
+                        user.FullName = dto.FullName;
+                    }
                     if (!string.IsNullOrEmpty(dto.NewPassword))
                     {
                         if (string.IsNullOrEmpty(dto.CurrentPassword))
